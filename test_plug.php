@@ -41,8 +41,8 @@ function utt_tp_dataMenu_create(){
     add_menu_page('tp_data','tp_data','manage_options',__FILE__,'tp_data_page' );
     
     //add submenu pages to tp_data menu
-  	$loginPage = add_submenu_page( __FILE__, __("Login","tp_data"), __("Login","tp_data"), 'manage_options',__FILE__.'_login', 'tp_data_login' );
-   	add_action('load-'.$loginPage, 'tp_data_login');
+  	$loginPage = add_submenu_page( __FILE__, __("Login","tp_data"), __("Login","tp_data"), 'manage_options',__FILE__.'_login', 'tp_create_data_page' );
+   	add_action('load-'.$loginPage, 'tp_data_scripts');
    }
 
 //load main utt page
@@ -57,77 +57,5 @@ function tp_data_page(){
     </div>
     <?php
 }
-
-
-function tp_data_login(){
-    //teachers form
+require('teachersFunctions.php');
 ?>
-<div class="wrap" >
-    <h2 id="dataTitle"><?php _e('Insert Data','tp_data'); ?></h2>
-    <form action="" name="dataForm" method="post">
-        <input type="hidden" name="dataid" id="dataid" value=0 />
-        <?php _e("Name:","tp_data"); ?><br/>
-        <input type="text" name="userName" id="userName" class="dirty" required placeholder="<?php _e("Required","tp_data"); ?>"/>
-        <br/>
-        <?php _e("Semester:","tp_data"); ?><br/>
-        <input type="text" name="semester" id="semester" class="dirty"/>
-        <br/>
-        <?php _e("email:","tp_data"); ?><br/>
-        <input type="text" name="emailId" id="emailId" class="dirty"/>
-        <br/>
-        <div id="secondaryButtonContainer">
-        <input type="submit" value="<?php _e("Submit","tp_data"); ?>" id="insert-updateData" class="button-primary"/>
-        <a href='#' class='button-secondary' id="clearDataForm"><?php _e("Reset","tp_data"); ?></a>
-        </div>
-    </form>
-    <!-- place to view messages -->
-    <div id="messages"></div>
-    <!-- place to view table with inserted data -->
-    <div id="dataResults">
-        <?php tp_view_data(); ?>
-    </div>
-</div>
-
-<?php
-}
-
-add_action('wp_ajax_tp_view_data', 'tp_view_data');
-function tp_view_data(){
-    global $wpdb;
-    $tpTable=$wpdb->prefix."tp_data";
-        
-    //show inserted data
-    $tp = $wpdb->get_results("SELECT * FROM $tpTable");
-    ?>
-        <!-- table with inserted data -->
-        <table class="widefat bold-th">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th><?php _e("Name","UniTimetable"); ?></th>
-                    <th><?php _e("Semester","UniTimetable"); ?></th>
-                    <th><?php _e("Email Id","UniTimetable"); ?></th>
-                </tr>
-            </thead>
-            <tbody>
-        <?php
-        //show grey and white records in order to be more recognizable
-        $bgcolor = 1;
-        foreach($tp as $tps){
-            if($bgcolor == 1){
-                $addClass = "class='grey'";
-                $bgcolor = 2;
-            }else{
-                $addClass = "class='white'";
-                $bgcolor = 1;
-            }
-            //a record
-            echo "<tr id='$tps->dataID' $addClass><td>$tps->dataID</td><td>$tps->userName</td><td>$tps->userSemester</td><td><a href='#' onclick='deleteTeacher($teacher->dataID);' class='deleteTeacher'><img id='edit-delete-icon' src='".plugins_url('icons/delete_icon.png', __FILE__)."'/> ".__("Delete","UniTimetable")."</a>&nbsp; <a href='#' onclick=\"editTeacher($tps->dataID, '$tps->userName', '$tps->userSemester');\" class='editTeacher'><img id='edit-delete-icon' src='".plugins_url('icons/edit_icon.png', __FILE__)."'/> ".__("Edit","UniTimetable")."</a></td></tr>";
-        }
-        
-        ?>
-            </tbody>
-        </table>
-        <?php
-        die();
-}
